@@ -104,8 +104,8 @@ test_rect = pygame.Rect(100,100,100,50)
 
 while True: # game loop
     display.fill((48,25,52))
-    scroll[0] +=  (player_rect.x-scroll[0]-100)
-    scroll[1] += (player_rect.x - scroll[0]-100)
+    scroll[0] +=  (player_rect.x-scroll[0]-100)/20
+    scroll[1] += (player_rect.y - scroll[1]-100)/20
     tile_rects = []
     y = 0
     for row in game_map:

@@ -1,2 +1,7 @@
-# python-game-test
-creating a plataform python game
+## Simple plataform python game 
+
+
+# creates a plataform game using simple python codes
+
+
+

@@ -1,28 +1,27 @@
 import os
 import pygame
 
-os.chdir('C:/Users/Lucas Angulski/Documents/GitHub/pygame')
+os.chdir('C:/Users/Lucas Angulski/Documents/GitHub/python-game-test')
 
 clock = pygame.time.Clock()
 
 import sys
 from pygame.locals import *
 
-
+pygame.display.set_caption('Pygame Platformer')
 
 pygame.init()
 
-pygame.display.set_caption('TESTING A PLATAFORM GAME WINDOW')
-player_image = pygame.image.load('Assets\Sprites\Idle1.png')
-terrein_image = pygame.image.load('Assets\Sprites\sub_terrein.png')
-grounden_image = pygame.image.load('Assets\Sprites\ground_image.png')
-TILE_SIZE=grounden_image.get_width()
+
+
+
+
 #KEY COLOR :
 # player_image.set_colorkey((255,255,255)
 
 WINDOW_SIZE = (600, 400)
 screen = pygame.display.set_mode(WINDOW_SIZE, 0, 32)  # start the window
-display = pygame.Surface((600, 400))
+display = pygame.Surface((500, 300))
 #class Spritesheet:
 #    def __init__(self,filename):
 #    #utility class for loading and parsing
@@ -49,20 +48,21 @@ def load_map(path):
 
 game_map = load_map('map')
 
+pygame.display.set_caption('TESTING A PLATAFORM GAME WINDOW')
 
-#game_map = [['0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0'],
-           # ['0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0'],
-            #['0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0'],
-            #['0','0','0','0','0','0','2','2','2','2','2','2','0','0','0','0','0','0','0'],
-            #['0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0'],
-            #['0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0'],
-            #['2','2','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','2','2'],
-            #['1','1','2','2','2','2','2','2','2','2','2','2','2','2','2','2','2','1','1'],
-            #['1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1'],
-            #['1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1'],
-            #['1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1'],
-            #['1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1'],
-            #['1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1']]
+player_image = pygame.image.load('Assets\Sprites\Idle1.png')
+
+terrein_image = pygame.image.load('Assets\Sprites\sub_terrein.png')
+
+grounden_image = pygame.image.load('Assets\Sprites\ground_image.png')
+
+column_image = pygame.image.load('Assets\Sprites\column.png').convert()
+
+TILE_SIZE=grounden_image.get_width()
+
+
+background_objects = [[0.25,[120,10,70,400]],[0.25,[280,30,40,400]],[0.5,[30,40,40,400]],[0.5,[130,90,100,400]],[0.5,[300,80,120,400]]]
+
 
 def collision_test(rect, tiles):
     hit_list = []
@@ -99,13 +99,23 @@ moving_left = False
 player_y_momentum = 0
 air_timer = 0
 
-player_rect = pygame.Rect(40, 40, player_image.get_width(), player_image.get_height())
+player_rect = pygame.Rect(40, 40, 60, player_image.get_height())
 test_rect = pygame.Rect(100,100,100,50)
 
 while True: # game loop
+
+
     display.fill((48,25,52))
     scroll[0] +=  (player_rect.x-scroll[0]-100)/20
     scroll[1] += (player_rect.y - scroll[1]-100)/20
+
+    pygame.draw.rect(display,(85,23,122),pygame.Rect(0,150,500,300))
+    for background_object in background_objects:
+        obj_rect = pygame.Rect(background_object[1][0]-scroll[0]*background_object[0],background_object[1][1]-scroll[1]*background_object[0],background_object[1][2],background_object[1][3])
+        if background_object[0] ==0.5:
+            pygame.draw.rect(display, (14,222,150),obj_rect)
+        else:
+            pygame.draw.rect(display, (255, 222, 35), obj_rect)
     tile_rects = []
     y = 0
     for row in game_map:

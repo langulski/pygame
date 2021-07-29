@@ -85,8 +85,6 @@ player_flip = False
 
 pygame.display.set_caption('TESTING A PLATAFORM GAME WINDOW')
 
-#player_image = pygame.image.load('Assets\Sprites\Idle1.png')
-
 terrein_image = pygame.image.load('Assets\Sprites\sub_terrein.png')
 
 grounden_image = pygame.image.load('Assets\Sprites\ground_image.png')
@@ -130,6 +128,8 @@ def move(rect, movement, tiles):
 
 moving_right = False
 moving_left = False
+attack_1 = False
+attack_2 = False
 
 player_y_momentum = 0
 air_timer = 0

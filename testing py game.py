@@ -1,28 +1,27 @@
 import os
 import pygame
 
-os.chdir('C:/Users/Lucas Angulski/Documents/GitHub/pygame')
+os.chdir('C:/Users/Lucas Angulski/Documents/GitHub/python-game-test')
 
 clock = pygame.time.Clock()
 
 import sys
 from pygame.locals import *
 
-
+pygame.display.set_caption('Pygame Platformer')
 
 pygame.init()
 
-pygame.display.set_caption('TESTING A PLATAFORM GAME WINDOW')
-player_image = pygame.image.load('Assets\Sprites\Idle1.png')
-terrein_image = pygame.image.load('Assets\Sprites\sub_terrein.png')
-grounden_image = pygame.image.load('Assets\Sprites\ground_image.png')
-TILE_SIZE=grounden_image.get_width()
+
+
+
+
 #KEY COLOR :
 # player_image.set_colorkey((255,255,255)
 
 WINDOW_SIZE = (600, 400)
 screen = pygame.display.set_mode(WINDOW_SIZE, 0, 32)  # start the window
-display = pygame.Surface((600, 400))
+display = pygame.Surface((500, 300))
 #class Spritesheet:
 #    def __init__(self,filename):
 #    #utility class for loading and parsing
@@ -50,19 +49,53 @@ def load_map(path):
 game_map = load_map('map')
 
 
-#game_map = [['0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0'],
-           # ['0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0'],
-            #['0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0'],
-            #['0','0','0','0','0','0','2','2','2','2','2','2','0','0','0','0','0','0','0'],
-            #['0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0'],
-            #['0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0'],
-            #['2','2','0','0','0','0','0','0','0','0','0','0','0','0','0','0','0','2','2'],
-            #['1','1','2','2','2','2','2','2','2','2','2','2','2','2','2','2','2','1','1'],
-            #['1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1'],
-            #['1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1'],
-            #['1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1'],
-            #['1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1'],
-            #['1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1','1']]
+global animation_frames
+animation_frames = {}
+def load_animation(path,frame_durations):
+    global animation_frames
+    animation_name = path.split('/')[-1]
+    animation_frame_data = []
+    n = 0
+    for frame in frame_durations:
+        animation_frame_id = animation_name + '_' + str(n)
+        img_loc = path + '/' + animation_frame_id + '.png'
+        # player_animations/idle/idle_0.png
+        animation_image = pygame.image.load(img_loc)
+        animation_image.set_colorkey((255,255,255))
+        animation_frames[animation_frame_id] = animation_image.copy()
+        for i in range(frame):
+            animation_frame_data.append(animation_frame_id)
+        n += 1
+    return animation_frame_data
+
+def change_action (action_var,frame,new_value):
+    if action_var !=new_value:
+        action_var = new_value
+        frame=0
+    return action_var,frame
+
+animation_database = {}
+
+animation_database['idle'] = load_animation('player_animations/idle',[10,10,15])
+animation_database['run'] = load_animation('player_animations/run',[7,7])
+player_action = 'idle'
+player_frame = 0
+player_flip = False
+
+
+pygame.display.set_caption('TESTING A PLATAFORM GAME WINDOW')
+
+terrein_image = pygame.image.load('Assets\Sprites\sub_terrein.png')
+
+grounden_image = pygame.image.load('Assets\Sprites\ground_image.png')
+
+column_image = pygame.image.load('Assets\Sprites\column.png').convert()
+
+TILE_SIZE=31
+
+
+background_objects = [[0.25,[120,10,70,400]],[0.25,[280,30,40,400]],[0.5,[30,40,40,400]],[0.5,[130,90,100,400]],[0.5,[300,80,120,400]]]
+
 
 def collision_test(rect, tiles):
     hit_list = []
@@ -95,17 +128,29 @@ def move(rect, movement, tiles):
 
 moving_right = False
 moving_left = False
+attack_1 = False
+attack_2 = False
 
 player_y_momentum = 0
 air_timer = 0
 
-player_rect = pygame.Rect(40, 40, player_image.get_width(), player_image.get_height())
-test_rect = pygame.Rect(100,100,100,50)
+player_rect = pygame.Rect(100,100,50,90)
+test_rect = pygame.Rect(100,100,63,50)
 
 while True: # game loop
+
+
     display.fill((48,25,52))
     scroll[0] +=  (player_rect.x-scroll[0]-100)/20
     scroll[1] += (player_rect.y - scroll[1]-100)/20
+
+    pygame.draw.rect(display,(85,23,122),pygame.Rect(0,150,500,300))
+    for background_object in background_objects:
+        obj_rect = pygame.Rect(background_object[1][0]-scroll[0]*background_object[0],background_object[1][1]-scroll[1]*background_object[0],background_object[1][2],background_object[1][3])
+        if background_object[0] ==0.5:
+            pygame.draw.rect(display, (14,222,150),obj_rect)
+        else:
+            pygame.draw.rect(display, (255, 222, 35), obj_rect)
     tile_rects = []
     y = 0
     for row in game_map:
@@ -130,6 +175,16 @@ while True: # game loop
     if player_y_momentum > 3:
         player_y_momentum = 3
 
+    if player_movement[0] == 0:
+        player_action, player_frame = change_action(player_action, player_frame, 'idle')
+    if player_movement[0] > 0:
+        player_flip = False
+        player_action, player_frame = change_action(player_action, player_frame, 'run')
+    if player_movement[0] < 0:
+        player_flip = True
+        player_action, player_frame = change_action(player_action, player_frame, 'run')
+
+
     player_rect, collisions = move(player_rect, player_movement, tile_rects)
 
     if collisions['bottom']:
@@ -138,7 +193,13 @@ while True: # game loop
     else:
         air_timer += 1
 
-    display.blit(player_image, (player_rect.x-scroll[0], player_rect.y-scroll[1]))
+    player_frame += 1
+    if player_frame >= len(animation_database[player_action]):
+        player_frame = 0
+    player_img_id = animation_database[player_action][player_frame]
+    player_img = animation_frames[player_img_id]
+    display.blit(pygame.transform.flip(player_img, player_flip, False),
+                 (player_rect.x - scroll[0], player_rect.y - scroll[1]))
 
     for event in pygame.event.get(): # event loop
         if event.type == QUIT: # check for window quit

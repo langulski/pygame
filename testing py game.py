@@ -21,7 +21,7 @@ pygame.init()
 
 WINDOW_SIZE = (600, 400)
 screen = pygame.display.set_mode(WINDOW_SIZE, 0, 32)  # start the window
-display = pygame.Surface((500, 300))
+display = pygame.Surface((300, 400))
 #class Spritesheet:
 #    def __init__(self,filename):
 #    #utility class for loading and parsing
@@ -91,6 +91,8 @@ grounden_image = pygame.image.load('Assets\Sprites\ground_image.png')
 
 column_image = pygame.image.load('Assets\Sprites\column.png').convert()
 
+background_img = pygame.image.load('Assets/ENVIRONMENT/backgrounds.png')
+
 TILE_SIZE=31
 
 
@@ -149,6 +151,7 @@ while True: # game loop
         obj_rect = pygame.Rect(background_object[1][0]-scroll[0]*background_object[0],background_object[1][1]-scroll[1]*background_object[0],background_object[1][2],background_object[1][3])
         if background_object[0] ==0.5:
             pygame.draw.rect(display, (14,222,150),obj_rect)
+            
         else:
             pygame.draw.rect(display, (255, 222, 35), obj_rect)
     tile_rects = []
@@ -211,7 +214,7 @@ while True: # game loop
             if event.key == K_LEFT:
                 moving_left = True
             if event.key == K_UP:
-                if air_timer < 6:
+                if air_timer < 21:
                     player_y_momentum = -5
         if event.type == KEYUP:
             if event.key == K_RIGHT:
@@ -220,6 +223,7 @@ while True: # game loop
                 moving_left = False
 
     surf = pygame.transform.scale(display, WINDOW_SIZE)
+    screen.blit(surf, (0, 0))
     screen.blit(surf, (0, 0))
     pygame.display.update() # update display
     clock.tick(60) # maintain 60 fps
